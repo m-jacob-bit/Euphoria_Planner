@@ -1,0 +1,14 @@
+{
+  "name": "Queen Valley Apartment Planner",
+  "short_name": "Queen Valley",
+  "description": "A private apartment payment and cheque-funding planner.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f3ed",
+  "theme_color": "#1f2f32",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

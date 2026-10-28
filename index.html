@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2f32" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Queen Valley" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Queen Valley Planner</title>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">EUPHORIA • QUEEN VALLEY</div>
+      <h1>Apartment Money Planner</h1>
+      <p class="subtle">Keep the signed-cheque account funded, without making life miserable.</p>
+    </div>
+    <button id="settingsBtn" class="button secondary">Settings</button>
+  </header>
+
+  <main class="shell">
+    <section id="criticalBanner" class="banner hidden" aria-live="polite"></section>
+
+    <section class="grid hero-grid">
+      <article class="card next-card">
+        <div class="card-label">Next cheque bundle</div>
+        <div id="nextDueDate" class="big-date">—</div>
+        <div id="nextDueAmount" class="money-xl">EGP —</div>
+        <div id="nextDueBreakdown" class="subtle"></div>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div>
+            <div class="card-label">Recommended protected amount</div>
+            <div id="protectedAmount" class="money-lg">EGP —</div>
+          </div>
+          <div>
+            <div class="card-label">Days remaining</div>
+            <div id="daysRemaining" class="money-lg">—</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card status-card">
+        <div class="card-label">Cheque-clearing CIB account</div>
+        <label class="field-label" for="chequeBalance">Available balance now</label>
+        <div class="currency-input">
+          <span>EGP</span>
+          <input id="chequeBalance" type="number" inputmode="decimal" min="0" step="100" />
+        </div>
+        <div id="fundingStatus" class="status-pill neutral">Enter your balance</div>
+        <div id="fundingMessage" class="status-copy"></div>
+        <button id="markFundedBtn" class="button primary full">Update balance</button>
+      </article>
+    </section>
+
+    <section class="grid three-grid">
+      <article class="card metric-card">
+        <div class="card-label">Save this month</div>
+        <div id="monthlySave" class="money-lg">EGP —</div>
+        <div id="monthlySaveNote" class="subtle"></div>
+      </article>
+      <article class="card metric-card">
+        <div class="card-label">Life money after plan</div>
+        <div id="lifeMoney" class="money-lg">EGP —</div>
+        <div class="subtle">After rent, apartment saving and emergency saving.</div>
+      </article>
+      <article class="card metric-card">
+        <div class="card-label">Salary used</div>
+        <div id="salaryUsed" class="money-lg">EGP —</div>
+        <div id="salaryNote" class="subtle"></div>
+      </article>
+    </section>
+
+    <section class="card strategy-card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">RECOMMENDED BANK SETUP</div>
+          <h2>Make the cheque account boring.</h2>
+        </div>
+      </div>
+      <div class="strategy-steps">
+        <div class="step"><span>1</span><div><strong>Existing CIB account = cheque-clearing account.</strong><br><small>Do not use its debit card for normal life once the second account is ready.</small></div></div>
+        <div class="step"><span>2</span><div><strong>Second CIB account = spending account.</strong><br><small>Food, petrol, subscriptions, shopping and everyday card spending happen there.</small></div></div>
+        <div class="step"><span>3</span><div><strong>Apartment money stays in the cheque account.</strong><br><small>No “remember to transfer it back” problem. Once money is reserved, treat it as already spent.</small></div></div>
+      </div>
+      <div class="warning-box"><strong>Rule:</strong> Until a cheque actually clears, the protected amount is not spendable—even if CIB shows it as “available.”</div>
+    </section>
+
+    <section class="card">
+      <div class="section-head wrap">
+        <div>
+          <div class="eyebrow">12-MONTH VIEW</div>
+          <h2>Cash-flow calendar</h2>
+        </div>
+        <div class="actions">
+          <button id="exportCalendarBtn" class="button secondary">Export Apple Calendar</button>
+          <button id="exportDataBtn" class="button secondary">Backup data</button>
+          <label class="button secondary file-button">Restore backup<input id="importDataInput" type="file" accept="application/json" /></label>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Salary</th>
+              <th>Rent</th>
+              <th>Apartment save</th>
+              <th>Emergency save</th>
+              <th>Life money</th>
+              <th>Payments due</th>
+            </tr>
+          </thead>
+          <tbody id="monthlyTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">SIGNED CHEQUES & OTHER PROPERTY DUES</div>
+          <h2>Payment schedule</h2>
+        </div>
+        <div class="subtle">Mark an item paid only after it has actually cleared.</div>
+      </div>
+      <div id="paymentList" class="payment-list"></div>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" class="dialog-card" id="settingsForm">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">PLAN SETTINGS</div>
+          <h2>Assumptions</h2>
+        </div>
+        <button value="cancel" class="icon-button" aria-label="Close">×</button>
+      </div>
+
+      <div class="settings-grid">
+        <label>Current monthly salary
+          <input id="salaryInput" type="number" min="0" step="100" />
+        </label>
+        <label>Raise starts
+          <input id="raiseDateInput" type="month" />
+        </label>
+        <label>Raise %
+          <input id="raisePctInput" type="number" min="0" step="0.1" />
+        </label>
+        <label>Monthly rent
+          <input id="rentInput" type="number" min="0" step="100" />
+        </label>
+        <label>Emergency saving / month
+          <input id="emergencyInput" type="number" min="0" step="100" />
+        </label>
+        <label>Desired life budget / month
+          <input id="lifeTargetInput" type="number" min="0" step="100" />
+        </label>
+        <label>Safety buffer above next cheque
+          <input id="bufferInput" type="number" min="0" step="100" />
+        </label>
+        <label>Monthly saving reminder day
+          <input id="reminderDayInput" type="number" min="1" max="28" step="1" />
+        </label>
+      </div>
+
+      <div class="note-box">
+        This version assumes only the January 2027 raise. It does <strong>not</strong> assume future annual raises, so the forecast stays conservative.
+      </div>
+
+      <div class="dialog-actions">
+        <button id="resetBtn" type="button" class="button danger">Reset local data</button>
+        <button value="cancel" class="button secondary">Cancel</button>
+        <button id="saveSettingsBtn" value="default" class="button primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer>
+    <p>Private by design: this app stores plan data in this browser only. It does not connect to CIB and never asks for bank credentials.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
