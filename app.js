@@ -6,6 +6,7 @@ const DEFAULT_STATE = {
     raiseDate: '2027-01',
     raisePct: 9,
     rent: 0,
+    titheAmount: 8000,
     emergency: 0,
     lifeTarget: 0,
     buffer: 5000,
@@ -98,6 +99,11 @@ function salaryFor(date) {
   return s.salary;
 }
 
+// Tithe is a manually entered monthly budget amount.
+function titheForSalary() {
+  return Math.max(0, Number(state.settings.titheAmount) || 0);
+}
+
 function paymentDueInMonth(date) {
   return PAYMENTS.filter(p => !isPaid(p) && p.date.getFullYear() === date.getFullYear() && p.date.getMonth() === date.getMonth());
 }
@@ -169,7 +175,10 @@ function updateMetrics() {
   const now = new Date();
   const salary = salaryFor(now);
   const contribution = recommendedContribution(now);
-  const life = salary - Number(state.settings.rent) - contribution - Number(state.settings.emergency);
+  const tithe = titheForSalary(salary);
+  const life = salary - Number(state.settings.rent) - contribution - Number(state.settings.emergency) - tithe;
+  document.getElementById('monthlyTithe').textContent = money(tithe);
+  document.getElementById('titheNote').textContent = 'Your manually entered monthly amount. Change it in Settings.';
   document.getElementById('monthlySave').textContent = money(contribution);
   document.getElementById('monthlySaveNote').textContent = contribution ? 'Recommended property contribution for this phase.' : 'No planned contribution for this month.';
   document.getElementById('lifeMoney').textContent = money(life);
@@ -198,7 +207,8 @@ function renderMonthlyTable() {
     const rent = Number(state.settings.rent || 0);
     const apt = recommendedContribution(d);
     const emergency = Number(state.settings.emergency || 0);
-    const life = salary - rent - apt - emergency;
+    const tithe = titheForSalary(salary);
+    const life = salary - rent - apt - emergency - tithe;
     const dues = paymentDueInMonth(d);
     const dueText = dues.length ? dues.map(p => `${p.kind} ${money(p.amount)}`).join(' + ') : '—';
     const tr = document.createElement('tr');
@@ -209,6 +219,7 @@ function renderMonthlyTable() {
       <td>${money(rent)}</td>
       <td>${money(apt)}</td>
       <td>${money(emergency)}</td>
+      <td>${money(tithe)}</td>
       <td class="${cls}">${money(life)}</td>
       <td>${dueText}</td>`;
     tbody.appendChild(tr);
@@ -246,6 +257,7 @@ function fillSettingsForm() {
   document.getElementById('raiseDateInput').value = s.raiseDate;
   document.getElementById('raisePctInput').value = s.raisePct;
   document.getElementById('rentInput').value = s.rent;
+  document.getElementById('titheAmountInput').value = s.titheAmount;
   document.getElementById('emergencyInput').value = s.emergency;
   document.getElementById('lifeTargetInput').value = s.lifeTarget;
   document.getElementById('bufferInput').value = s.buffer;
@@ -258,6 +270,7 @@ function saveSettingsFromForm() {
     raiseDate: document.getElementById('raiseDateInput').value || '2027-01',
     raisePct: Number(document.getElementById('raisePctInput').value || 0),
     rent: Number(document.getElementById('rentInput').value || 0),
+    titheAmount: Math.max(0, Number(document.getElementById('titheAmountInput').value) || 0),
     emergency: Number(document.getElementById('emergencyInput').value || 0),
     lifeTarget: Number(document.getElementById('lifeTargetInput').value || 0),
     buffer: Number(document.getElementById('bufferInput').value || 0),

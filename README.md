@@ -10,7 +10,9 @@ A private, static PWA for the Euphoria Queen Valley payment plan. It is designed
 - Includes the EGP 268,510 maintenance deposit due 4 Apr 2030.
 - Tracks the available balance of the CIB account from which signed cheques will clear.
 - Shows the next payment bundle, recommended protected amount, shortfall and days remaining.
-- Uses the initial planning assumptions: EGP 80,700 salary, 9% raise from Jan 2027, EGP 12,000 rent, EGP 10,000 emergency saving target.
+- Salary, rent and emergency saving start blank/zero for privacy; enter them in Settings. The configured raise defaults to 9% from January 2027.
+- Monthly Tithe starts at EGP 8,000 and is entered manually in Settings (including zero). It never changes automatically with salary.
+- Dashboard safe-to-spend and every monthly forecast row deduct tithe separately from other savings.
 - Uses the phased apartment-saving plan discussed with Michael.
 - Lets payments be marked paid after they actually clear.
 - Stores data in browser localStorage only.
@@ -46,3 +48,13 @@ GitHub Pages is static hosting. A static PWA cannot reliably wake itself at a fu
 ## Privacy
 
 Do not add account numbers, card numbers, passwords, OTPs, or CIB credentials to this app. It does not need them.
+
+## Updating an existing deployment
+
+1. Use Backup data before updating.
+2. Extract the new ZIP on your Mac. Upload everything INSIDE the queen-valley-planner folder to the same GitHub repository root, replacing the existing files. Commit the upload. Keep the same Pages deployment settings and URL.
+3. After deployment finishes, close and reopen the app while online. If the old screen remains, reload once more to let the updated offline cache take over. Look for Monthly Tithe on the dashboard.
+4. Open Settings to review the monthly Tithe amount. Existing saved salary, balance and paid statuses are preserved at the same site address. Older backups receive the EGP 8,000 tithe default when restored.
+5. Mac and iPhone still store separate local data. Review Settings on each device.
+
+The tithe is a monthly budget reservation, not a property cheque or a record of a completed donation. Display amounts round to whole EGP; calculations retain decimals.

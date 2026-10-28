@@ -1,4 +1,4 @@
-const CACHE = 'queen-valley-v1';
+const CACHE = 'queen-valley-v2-tithe';
 const ASSETS = ['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));

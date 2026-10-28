@@ -64,15 +64,21 @@
         <div id="monthlySaveNote" class="subtle"></div>
       </article>
       <article class="card metric-card">
-        <div class="card-label">Life money after plan</div>
+        <div class="card-label">Safe to spend after plan</div>
         <div id="lifeMoney" class="money-lg">EGP —</div>
-        <div class="subtle">After rent, apartment saving and emergency saving.</div>
+        <div class="subtle">After rent, apartment saving, emergency saving and tithe.</div>
       </article>
       <article class="card metric-card">
         <div class="card-label">Salary used</div>
         <div id="salaryUsed" class="money-lg">EGP —</div>
         <div id="salaryNote" class="subtle"></div>
       </article>
+    </section>
+
+    <section class="card metric-card">
+      <div class="card-label">Monthly Tithe</div>
+      <div id="monthlyTithe" class="money-lg">EGP —</div>
+      <div id="titheNote" class="subtle"></div>
     </section>
 
     <section class="card strategy-card">
@@ -111,7 +117,8 @@
               <th>Rent</th>
               <th>Apartment save</th>
               <th>Emergency save</th>
-              <th>Life money</th>
+              <th>Tithe</th>
+              <th>Safe to spend</th>
               <th>Payments due</th>
             </tr>
           </thead>
@@ -155,6 +162,9 @@
         <label>Monthly rent
           <input id="rentInput" type="number" min="0" step="100" />
         </label>
+        <label>Monthly Tithe (EGP)
+          <input id="titheAmountInput" type="number" min="0" step="0.01" />
+        </label>
         <label>Emergency saving / month
           <input id="emergencyInput" type="number" min="0" step="100" />
         </label>
@@ -169,6 +179,9 @@
         </label>
       </div>
 
+      <div class="note-box">
+        Tithe is a manually entered monthly budget amount, starting at EGP 8,000. It stays at your chosen amount until you change it, regardless of salary.
+      </div>
       <div class="note-box">
         This version assumes only the January 2027 raise. It does <strong>not</strong> assume future annual raises, so the forecast stays conservative.
       </div>
