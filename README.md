@@ -10,7 +10,7 @@ A private, static PWA for the Euphoria Queen Valley payment plan. It is designed
 - Includes the EGP 268,510 maintenance deposit due 4 Apr 2030.
 - Tracks the available balance of the CIB account from which signed cheques will clear.
 - Shows the next payment bundle, recommended protected amount, shortfall and days remaining.
-- Salary, rent and emergency saving start blank/zero for privacy; enter them in Settings. The configured raise defaults to 9% from January 2027.
+- Salary, rent and emergency saving start blank/zero for privacy; enter them in Settings. The configured salary raise defaults to 9% annually from January 2027.
 - Monthly Tithe starts at EGP 8,000 and is entered manually in Settings (including zero). It never changes automatically with salary.
 - Dashboard safe-to-spend and every monthly forecast row deduct tithe separately from other savings.
 - Uses the phased apartment-saving plan discussed with Michael.
@@ -67,3 +67,11 @@ The tithe is a monthly budget reservation, not a property cheque or a record of 
 - The raise begins with the payday in the configured raise month. Tithe remains manually entered.
 - Calendar saving reminders now occur on payday, starting October 2026. If you previously imported a calendar, replace that imported calendar with a fresh export to avoid duplicate or outdated reminders; any other reminder services are unchanged.
 - After upload, close all open planner windows and reopen online; reload again if needed. “PAYDAY EDITION” appears at the top. Existing local data and older backups receive payday 27 by default.
+
+## Annual increases edition
+
+Salary compounds by 9% every January from January 2027 by default. The salary setting is the BASE before that first raise, not the latest raised salary. Change the base and first-raise date together if rebasing later.
+
+Rent uses the entered BASE amount (Michael: EGP 12,000, already including November 2026). Rent compounds by 10% each November starting November 2027. November 2027 and 2028 increases are confirmed by Michael; later years are assumptions. Both annual rates and first-increase months are editable. Existing entered salary/rent values are preserved.
+
+Rent is reserved using the rate at the END of the pay cycle: October 27–November 26, 2027 therefore reserves EGP 13,200 for November. This is a monthly budget reservation, not a record that rent was paid.

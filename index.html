@@ -88,6 +88,11 @@
       <div id="titheNote" class="subtle"></div>
     </section>
 
+    <section class="card metric-card">
+      <div class="card-label">Rent reserved this pay cycle</div>
+      <div id="monthlyRent" class="money-lg">EGP —</div>
+      <div class="subtle">Reserves the rent applicable at the end of this cycle, so the October payday funds November rent.</div>
+    </section>
     <section class="card strategy-card">
       <div class="section-head">
         <div>
@@ -160,14 +165,20 @@
         <label>Current monthly salary
           <input id="salaryInput" type="number" min="0" step="100" />
         </label>
-        <label>Raise starts
+        <label>First annual salary raise
           <input id="raiseDateInput" type="month" />
         </label>
-        <label>Raise %
+        <label>Annual salary raise %
           <input id="raisePctInput" type="number" min="0" step="0.1" />
         </label>
-        <label>Monthly rent
+        <label>Base monthly rent
           <input id="rentInput" type="number" min="0" step="100" />
+        </label>
+        <label>First annual rent increase
+          <input id="rentRaiseDateInput" type="month" />
+        </label>
+        <label>Annual rent increase %
+          <input id="rentRaisePctInput" type="number" min="0" step="0.1" />
         </label>
         <label>Monthly Tithe (EGP)
           <input id="titheAmountInput" type="number" min="0" step="0.01" />
@@ -190,7 +201,7 @@
         Tithe is a manually entered monthly budget amount, starting at EGP 8,000. It stays at your chosen amount until you change it, regardless of salary.
       </div>
       <div class="note-box">
-        The raise starts with the payday in the selected month, so the December salary keeps its original amount through the January payday. Days 29–31 move to the last day of shorter months. This version assumes only the January 2027 raise. It does <strong>not</strong> assume future annual raises, so the forecast stays conservative.
+        Salary compounds by the annual percentage from the first raise month (default: 9% every January from 2027). Enter your salary before that first raise as the base; do not replace it with an already-raised salary unless you also move the first raise date forward. Rent uses the same base-and-first-increase approach: EGP 12,000 already includes November 2026; the next increase is November 2027, then every November. The 10% increases in November 2027 and November 2028 are confirmed by Michael; later increases are planning assumptions. Rent is reserved ahead for the month reached by the pay cycle's end. Days 29–31 move to the last day of shorter months.
       </div>
 
       <div class="dialog-actions">

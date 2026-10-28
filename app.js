@@ -6,6 +6,8 @@ const DEFAULT_STATE = {
     raiseDate: '2027-01',
     raisePct: 9,
     rent: 0,
+    rentRaiseDate: '2027-11',
+    rentRaisePct: 10,
     titheAmount: 8000,
     emergency: 0,
     lifeTarget: 0,
@@ -94,12 +96,23 @@ function recommendedContribution(date = new Date()) {
   return 0;
 }
 
+function annualIncreaseCount(date, firstIncrease) {
+  if (!/^\d{4}-\d{2}$/.test(firstIncrease || '')) return 0;
+  const [year, month] = firstIncrease.split('-').map(Number);
+  const months = (date.getFullYear() - year) * 12 + date.getMonth() + 1 - month;
+  return months < 0 ? 0 : Math.floor(months / 12) + 1;
+}
 function salaryFor(date) {
   const s = state.settings;
-  const ym = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
-  if (ym >= s.raiseDate) return s.salary * (1 + s.raisePct/100);
-  return s.salary;
+  return Number(s.salary) * Math.pow(1 + Number(s.raisePct) / 100, annualIncreaseCount(date, s.raiseDate));
 }
+function rentFor(date) {
+  const s = state.settings;
+  return Number(s.rent) * Math.pow(1 + Number(s.rentRaisePct) / 100, annualIncreaseCount(date, s.rentRaiseDate));
+}
+// Reserve the rent applicable at the end of the pay cycle: the October 27
+// salary therefore reserves the higher rent for November before it is due.
+function rentForCycle(start) { return rentFor(cycleEnd(start)); }
 
 // Tithe is a manually entered monthly budget amount.
 function titheForSalary() {
@@ -198,17 +211,18 @@ function updateMetrics() {
   const salary = salaryFor(now);
   const contribution = recommendedContribution(now);
   const tithe = titheForSalary(salary);
-  const life = salary - Number(state.settings.rent) - contribution - Number(state.settings.emergency) - tithe;
+  const life = salary - rentForCycle(now) - contribution - Number(state.settings.emergency) - tithe;
   document.getElementById('monthlyTithe').textContent = money(tithe);
   document.getElementById('titheNote').textContent = 'Your manually entered monthly amount. Change it in Settings.';
   document.getElementById('monthlySave').textContent = money(contribution);
   document.getElementById('monthlySaveNote').textContent = contribution ? 'Reserve this from the salary received on ' + dateFmt.format(now) + '.' : 'No planned contribution for this month.';
   document.getElementById('lifeMoney').textContent = money(life);
   document.getElementById('salaryUsed').textContent = money(salary);
+  document.getElementById('monthlyRent').textContent = money(rentForCycle(now));
   const raiseDateLabel = state.settings.raiseDate ? new Date(`${state.settings.raiseDate}-01T12:00:00`) : null;
   document.getElementById('salaryNote').textContent = now < raiseDateLabel
-    ? `${state.settings.raisePct}% raise assumed from ${monthFmt.format(raiseDateLabel)}.`
-    : `Includes the ${state.settings.raisePct}% raise assumption.`;
+    ? `${state.settings.raisePct}% annual raises assumed from ${monthFmt.format(raiseDateLabel)}.`
+    : `Includes ${annualIncreaseCount(now, state.settings.raiseDate)} annual ${state.settings.raisePct}% raise(s).`;
 }
 
 function monthIterator(start, count) {
@@ -226,7 +240,7 @@ function renderMonthlyTable() {
   tbody.innerHTML = '';
   for (const d of monthIterator(currentPayday(), 12)) {
     const salary = salaryFor(d);
-    const rent = Number(state.settings.rent || 0);
+    const rent = rentForCycle(d);
     const apt = recommendedContribution(d);
     const emergency = Number(state.settings.emergency || 0);
     const tithe = titheForSalary(salary);
@@ -279,6 +293,8 @@ function fillSettingsForm() {
   document.getElementById('raiseDateInput').value = s.raiseDate;
   document.getElementById('raisePctInput').value = s.raisePct;
   document.getElementById('rentInput').value = s.rent;
+  document.getElementById('rentRaiseDateInput').value = s.rentRaiseDate;
+  document.getElementById('rentRaisePctInput').value = s.rentRaisePct;
   document.getElementById('titheAmountInput').value = s.titheAmount;
   document.getElementById('emergencyInput').value = s.emergency;
   document.getElementById('lifeTargetInput').value = s.lifeTarget;
@@ -292,6 +308,8 @@ function saveSettingsFromForm() {
     raiseDate: document.getElementById('raiseDateInput').value || '2027-01',
     raisePct: Number(document.getElementById('raisePctInput').value || 0),
     rent: Number(document.getElementById('rentInput').value || 0),
+    rentRaiseDate: document.getElementById('rentRaiseDateInput').value || '2027-11',
+    rentRaisePct: Math.max(0, Number(document.getElementById('rentRaisePctInput').value) || 0),
     titheAmount: Math.max(0, Number(document.getElementById('titheAmountInput').value) || 0),
     emergency: Number(document.getElementById('emergencyInput').value || 0),
     lifeTarget: Number(document.getElementById('lifeTargetInput').value || 0),
