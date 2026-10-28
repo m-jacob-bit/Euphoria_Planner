@@ -58,3 +58,12 @@ Do not add account numbers, card numbers, passwords, OTPs, or CIB credentials to
 5. Mac and iPhone still store separate local data. Review Settings on each device.
 
 The tithe is a monthly budget reservation, not a property cheque or a record of a completed donation. Display amounts round to whole EGP; calculations retain decimals.
+
+## Payday edition
+
+- Settings → Salary payday defaults to 27 and supports days 1–31, clamped to month-end when needed.
+- The dashboard and 12-row forecast follow payday-to-day-before-next-payday cycles. Property dues are listed in the cycle in which they fall.
+- October–December 2026 salaries reserve 23,334 + 23,333 + 23,333 = EGP 70,000. This assumes all three planned contributions are made; the app does not automatically record transfers. The actual bank balance remains the funding check.
+- The raise begins with the payday in the configured raise month. Tithe remains manually entered.
+- Calendar saving reminders now occur on payday, starting October 2026. If you previously imported a calendar, replace that imported calendar with a fresh export to avoid duplicate or outdated reminders; any other reminder services are unchanged.
+- After upload, close all open planner windows and reopen online; reload again if needed. “PAYDAY EDITION” appears at the top. Existing local data and older backups receive payday 27 by default.

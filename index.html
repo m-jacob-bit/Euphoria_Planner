@@ -23,6 +23,13 @@
   </header>
 
   <main class="shell">
+    <section class="card">
+      <div class="eyebrow">CURRENT PAY CYCLE · PAYDAY EDITION</div>
+      <h2 id="payCycle"></h2>
+      <p id="nextPayday" class="subtle"></p>
+      <p class="subtle">Before January 2027: reserve EGP 23,334 from October salary, EGP 23,333 from November and EGP 23,333 from December — EGP 70,000 total. These are planned contributions; check the actual cheque-account balance above.</p>
+    </section>
+
     <section id="criticalBanner" class="banner hidden" aria-live="polite"></section>
 
     <section class="grid hero-grid">
@@ -59,7 +66,7 @@
 
     <section class="grid three-grid">
       <article class="card metric-card">
-        <div class="card-label">Save this month</div>
+        <div class="card-label">Save from this payday</div>
         <div id="monthlySave" class="money-lg">EGP —</div>
         <div id="monthlySaveNote" class="subtle"></div>
       </article>
@@ -100,7 +107,7 @@
       <div class="section-head wrap">
         <div>
           <div class="eyebrow">12-MONTH VIEW</div>
-          <h2>Cash-flow calendar</h2>
+          <h2>Payday cash-flow calendar</h2>
         </div>
         <div class="actions">
           <button id="exportCalendarBtn" class="button secondary">Export Apple Calendar</button>
@@ -112,7 +119,7 @@
         <table>
           <thead>
             <tr>
-              <th>Month</th>
+              <th>Payday / budget period</th>
               <th>Salary</th>
               <th>Rent</th>
               <th>Apartment save</th>
@@ -174,8 +181,8 @@
         <label>Safety buffer above next cheque
           <input id="bufferInput" type="number" min="0" step="100" />
         </label>
-        <label>Monthly saving reminder day
-          <input id="reminderDayInput" type="number" min="1" max="28" step="1" />
+        <label>Salary payday / saving reminder day
+          <input id="paydayInput" type="number" min="1" max="31" step="1" />
         </label>
       </div>
 
@@ -183,7 +190,7 @@
         Tithe is a manually entered monthly budget amount, starting at EGP 8,000. It stays at your chosen amount until you change it, regardless of salary.
       </div>
       <div class="note-box">
-        This version assumes only the January 2027 raise. It does <strong>not</strong> assume future annual raises, so the forecast stays conservative.
+        The raise starts with the payday in the selected month, so the December salary keeps its original amount through the January payday. Days 29–31 move to the last day of shorter months. This version assumes only the January 2027 raise. It does <strong>not</strong> assume future annual raises, so the forecast stays conservative.
       </div>
 
       <div class="dialog-actions">

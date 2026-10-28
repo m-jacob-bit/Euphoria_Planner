@@ -10,7 +10,8 @@ const DEFAULT_STATE = {
     emergency: 0,
     lifeTarget: 0,
     buffer: 5000,
-    reminderDay: 1
+    payday: 27,
+    reminderDay: 27
   },
   chequeBalance: 0,
   paid: {},
@@ -85,7 +86,8 @@ function nextBundle() {
 
 function recommendedContribution(date = new Date()) {
   const ym = date.getFullYear()*100 + (date.getMonth()+1);
-  if (ym >= 202611 && ym <= 202612) return 35000;
+  if (ym === 202610) return 23334;
+  if (ym >= 202611 && ym <= 202612) return 23333;
   if (ym >= 202701 && ym <= 203003) return 31600;
   if (ym >= 203004 && ym <= 203109) return 24700;
   if (ym >= 203110 && ym <= 203609) return 20500;
@@ -104,8 +106,26 @@ function titheForSalary() {
   return Math.max(0, Number(state.settings.titheAmount) || 0);
 }
 
-function paymentDueInMonth(date) {
-  return PAYMENTS.filter(p => !isPaid(p) && p.date.getFullYear() === date.getFullYear() && p.date.getMonth() === date.getMonth());
+// Clamp paydays such as the 31st to the last day of a shorter month.
+function paydayInMonth(year, month) {
+  const day = Math.min(31, Math.max(1, Math.trunc(Number(state.settings.payday) || 27)));
+  return new Date(year, month, Math.min(day, new Date(year, month + 1, 0).getDate()));
+}
+function currentPayday(date = new Date()) {
+  const candidate = paydayInMonth(date.getFullYear(), date.getMonth());
+  return date >= candidate ? candidate : paydayInMonth(date.getFullYear(), date.getMonth() - 1);
+}
+function nextPayday(start) {
+  return paydayInMonth(start.getFullYear(), start.getMonth() + 1);
+}
+function cycleEnd(start) {
+  const end = nextPayday(start);
+  end.setDate(end.getDate() - 1);
+  return end;
+}
+function paymentDueInCycle(start) {
+  const end = nextPayday(start);
+  return PAYMENTS.filter(p => !isPaid(p) && p.date >= start && p.date < end);
 }
 
 function startOfToday() {
@@ -172,7 +192,9 @@ function updateHero() {
 }
 
 function updateMetrics() {
-  const now = new Date();
+  const now = currentPayday();
+  document.getElementById('payCycle').textContent = `${dateFmt.format(now)} – ${dateFmt.format(cycleEnd(now))}`;
+  document.getElementById('nextPayday').textContent = `Next payday: ${dateFmt.format(nextPayday(now))}. Budget amounts cover this whole pay cycle, not a live spending balance.`;
   const salary = salaryFor(now);
   const contribution = recommendedContribution(now);
   const tithe = titheForSalary(salary);
@@ -180,7 +202,7 @@ function updateMetrics() {
   document.getElementById('monthlyTithe').textContent = money(tithe);
   document.getElementById('titheNote').textContent = 'Your manually entered monthly amount. Change it in Settings.';
   document.getElementById('monthlySave').textContent = money(contribution);
-  document.getElementById('monthlySaveNote').textContent = contribution ? 'Recommended property contribution for this phase.' : 'No planned contribution for this month.';
+  document.getElementById('monthlySaveNote').textContent = contribution ? 'Reserve this from the salary received on ' + dateFmt.format(now) + '.' : 'No planned contribution for this month.';
   document.getElementById('lifeMoney').textContent = money(life);
   document.getElementById('salaryUsed').textContent = money(salary);
   const raiseDateLabel = state.settings.raiseDate ? new Date(`${state.settings.raiseDate}-01T12:00:00`) : null;
@@ -191,10 +213,10 @@ function updateMetrics() {
 
 function monthIterator(start, count) {
   const out = [];
-  let d = new Date(start.getFullYear(), start.getMonth(), 1, 12);
+  let d = paydayInMonth(start.getFullYear(), start.getMonth());
   for (let i=0; i<count; i++) {
     out.push(new Date(d));
-    d.setMonth(d.getMonth()+1);
+    d = nextPayday(d);
   }
   return out;
 }
@@ -202,19 +224,19 @@ function monthIterator(start, count) {
 function renderMonthlyTable() {
   const tbody = document.getElementById('monthlyTableBody');
   tbody.innerHTML = '';
-  for (const d of monthIterator(new Date(), 12)) {
+  for (const d of monthIterator(currentPayday(), 12)) {
     const salary = salaryFor(d);
     const rent = Number(state.settings.rent || 0);
     const apt = recommendedContribution(d);
     const emergency = Number(state.settings.emergency || 0);
     const tithe = titheForSalary(salary);
     const life = salary - rent - apt - emergency - tithe;
-    const dues = paymentDueInMonth(d);
+    const dues = paymentDueInCycle(d);
     const dueText = dues.length ? dues.map(p => `${p.kind} ${money(p.amount)}`).join(' + ') : '—';
     const tr = document.createElement('tr');
     const cls = life < 0 ? 'life-bad' : life < Number(state.settings.lifeTarget) ? 'life-tight' : 'life-good';
     tr.innerHTML = `
-      <td><strong>${monthFmt.format(d)}</strong></td>
+      <td><strong>${dateFmt.format(d)}</strong><br><small>through ${dateFmt.format(cycleEnd(d))}</small></td>
       <td>${money(salary)}</td>
       <td>${money(rent)}</td>
       <td>${money(apt)}</td>
@@ -261,7 +283,7 @@ function fillSettingsForm() {
   document.getElementById('emergencyInput').value = s.emergency;
   document.getElementById('lifeTargetInput').value = s.lifeTarget;
   document.getElementById('bufferInput').value = s.buffer;
-  document.getElementById('reminderDayInput').value = s.reminderDay;
+  document.getElementById('paydayInput').value = s.payday;
 }
 
 function saveSettingsFromForm() {
@@ -274,7 +296,8 @@ function saveSettingsFromForm() {
     emergency: Number(document.getElementById('emergencyInput').value || 0),
     lifeTarget: Number(document.getElementById('lifeTargetInput').value || 0),
     buffer: Number(document.getElementById('bufferInput').value || 0),
-    reminderDay: Math.min(28, Math.max(1, Number(document.getElementById('reminderDayInput').value || 1)))
+    payday: Math.min(31, Math.max(1, Math.trunc(Number(document.getElementById('paydayInput').value) || 27))),
+    reminderDay: state.settings.reminderDay
   };
   saveState();
   renderAll();
@@ -302,8 +325,8 @@ function exportCalendar() {
   const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Queen Valley Planner//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Queen Valley Apartment'];
 
   // Monthly saving reminders through Sep 2036.
-  let d = new Date(2026,10,Math.min(28,state.settings.reminderDay),9,0,0);
-  const end = new Date(2036,8,28,9,0,0);
+  let d = paydayInMonth(2026,9);
+  const end = new Date(2036,9,1);
   while (d <= end) {
     const target = recommendedContribution(d);
     if (target > 0) {
@@ -316,7 +339,7 @@ function exportCalendar() {
         'BEGIN:VALARM','TRIGGER:-PT30M','ACTION:DISPLAY',`DESCRIPTION:${icsEscape(`Save ${money(target)} for Queen Valley`)}`,'END:VALARM',
         'END:VEVENT');
     }
-    d = new Date(d.getFullYear(), d.getMonth()+1, Math.min(28,state.settings.reminderDay), 9,0,0);
+    d = nextPayday(d);
   }
 
   // Payment events with 10-day, 3-day and 1-day alarms.
